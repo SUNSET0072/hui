@@ -1,0 +1,169 @@
+{% extends "base.html" %}
+
+{% block content %}
+  <!-- 英雄区域 -->
+  <section id="home" class="relative h-screen min-h-screen flex items-center bg-gradient-to-br from-dark to-dark/90 overflow-hidden">
+    <div class="absolute inset-0 z-0">
+      <img src="https://p3-flow-imagex-sign.byteimg.com/tos-cn-i-a9rns2rl98/rc/pc/code_assistant/3a882b94e4984dd68e7ef6711e6ce745~tplv-a9rns2rl98-image.image?rcl=20250802123338B1F19010AABF56EF685B&amp;rk3s=8e244e95&amp;rrcfp=e75484ac&amp;x-expires=1754714019&amp;x-signature=G3uU9EQSgQLZXexPng7%2BU8ncOVg%3D" alt="背景图片" class="w-full h-full object-cover opacity-30">
+    </div>
+    <div class="container mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+      <div class="max-w-3xl">
+        <h1 class="text-[clamp(2.5rem,8vw,5rem)] font-bold text-white leading-tight mb-6">
+          创意<span class="text-primary">设计</span>与<br>
+          <span class="text-secondary">艺术</span>作品集
+        </h1>
+        <p class="text-[clamp(1rem,3vw,1.25rem)] text-gray-200 mb-8 max-w-2xl">探索我的创意世界，这里展示了我的设计作品、摄影作品和创意项目。</p>
+        <div class="flex flex-wrap gap-4">
+          <a href="#portfolio" class="px-8 py-3 bg-primary hover:bg-primary/90 text-white font-medium rounded-lg shadow-lift">浏览作品集</a>
+          <a href="{{ url_for('contact') }}" class="px-8 py-3 bg-white/10 backdrop-blur-sm hover:bg-white/20 text-white font-medium rounded-lg border border-white/30 hover-lift">
+            联系我
+          </a>
+        </div>
+      </div>
+    </div>
+    <div class="absolute bottom-10 left-1/2 transform -translate-x-1/2 text-white animate-bounce">
+      <a href="#portfolio" class="text-white opacity-80 hover-opacity-100">
+        <i class="fa fa-chevron-down text-2xl"></i>
+      </a>
+    </div>
+  </section>
+
+  <!-- 作品集区域 -->
+  <section id="portfolio" class="py-20 bg-gray-50">
+    <div class="container mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="text-center mb-16">
+        <h2 class="text-[clamp(1.5rem,3vw,2.5rem)] font-bold mb-4">精选作品集</h2>
+        <p class="text-gray-600 max-w-2xl mx-auto">
+          这里展示了我的最新创作，包括设计作品、摄影照片和视频项目。点击图片可查看详情。
+        </p>
+      </div>
+      
+      <!-- 筛选按钮 -->
+      <div class="flex flex-wrap justify-center gap-3 mb-12">
+        <button class="filter-btn filter-active px-5 py-2 rounded-full text-sm font-medium transition-custom" data-filter="all">
+          全部作品
+        </button>
+        <button class="filter-btn px-5 py-2 rounded-full text-sm font-medium bg-gray-200 hover:bg-gray-300 transition-custom" data-filter="design">
+          设计作品
+        </button>
+        <button class="filter-btn px-5 py-2 rounded-full text-sm font-medium bg-gray-200 hover:bg-gray-300 transition-custom" data-filter="photo">
+          摄影作品
+        </button>
+        <button class="filter-btn px-5 py-2 rounded-full text-sm font-medium bg-gray-200 hover:bg-gray-300 transition-custom" data-filter="video">
+          视频项目
+        </button>
+      </div>
+      
+      <!-- 作品网格 -->
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
+        {% for item in portfolio_items %}
+          <div class="portfolio-item group" data-category="{{ item.category }}">
+            <div class="relative overflow-hidden rounded-xl shadow-lg bg-white">
+              {% if item.type == 'image' %}
+                <img src="{{ item.image }}" alt="{{ item.title }}" class="w-full h-64 object-cover object-center transition-custom group-hover:scale-110 cursor-zoom-in">
+              {% else %}
+                <div class="aspect-w-16 aspect-h-9 w-full h-64 bg-gray-100">
+                  <img src="{{ item.image }}" alt="{{ item.title }}" class="w-full h-full object-cover object-center transition-custom group-hover:scale-110">
+                  <div class="absolute inset-0 flex items-center justify-center">
+                    <div class="w-16 h-16 rounded-full bg-primary/80 flex items-center justify-center text-white text-2xl hover:bg-primary transition-custom cursor-pointer" data-video-url="{{ item.video_url }}">
+                      <i class="fa fa-play ml-1"></i>
+                    </div>
+                  </div>
+                </div>
+              {% endif %}
+              <div class="absolute inset-0 bg-gradient-to-t from-dark/80 to-transparent opacity-0 group-hover:opacity-100 transition-custom flex flex-col justify-end p-6">
+                <h3 class="text-xl font-semibold text-white mb-2">{{ item.title }}</h3>
+                <p class="text-gray-200 text-sm mb-4">{{ item.description }}</p>
+                <a href="{{ url_for('portfolio_item', item_id=item.id) }}" class="text-primary bg-white px-4 py-2 rounded-lg text-sm font-medium inline-block w-fit hover-lift">
+                  {% if item.type == 'image' %}查看详情{% else %}观看视频{% endif %}
+                </a>
+              </div>
+            </div>
+          </div>
+        {% endfor %}
+      </div>
+      
+      <!-- 加载更多按钮 -->
+      <div class="text-center mt-12">
+        <button id="loadMore" class="px-8 py-3 bg-white border border-gray-300 hover:border-primary text-dark hover:text-primary font-medium rounded-lg transition-custom hover-lift">
+          加载更多作品 <i class="fa fa-refresh ml-2"></i>
+        </button>
+      </div>
+    </div>
+  </section>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+  // 页面加载完成后初始化作品集功能
+  document.addEventListener('DOMContentLoaded', function() {
+    initPortfolioFunctions();
+    
+    // 作品集筛选
+    const filterBtns = document.querySelectorAll('.filter-btn');
+    const portfolioItems = document.querySelectorAll('.portfolio-item');
+    
+    filterBtns.forEach(btn => {
+      btn.addEventListener('click', function() {
+        // 更新按钮样式
+        filterBtns.forEach(b => {
+          b.classList.remove('filter-active', 'bg-primary', 'text-white');
+          b.classList.add('bg-gray-200', 'hover:bg-gray-300');
+        });
+        this.classList.add('filter-active', 'bg-primary', 'text-white');
+        this.classList.remove('bg-gray-200', 'hover:bg-gray-300');
+        
+        const filter = this.getAttribute('data-filter');
+        
+        // 筛选作品
+        portfolioItems.forEach(item => {
+          if (filter === 'all' || item.getAttribute('data-category') === filter) {
+            item.style.display = 'block';
+            // 添加动画效果
+            setTimeout(() => {
+              item.style.opacity = '1';
+              item.style.transform = 'scale(1)';
+            }, 50);
+          } else {
+            item.style.opacity = '0';
+            item.style.transform = 'scale(0.8)';
+            // 延迟隐藏，等待动画完成
+            setTimeout(() => {
+              item.style.display = 'none';
+            }, 300);
+          }
+        });
+      });
+    });
+    
+    // 加载更多按钮功能
+    const loadMoreBtn = document.getElementById('loadMore');
+    let loading = false;
+    
+    loadMoreBtn.addEventListener('click', function() {
+      if (loading) return;
+      
+      loading = true;
+      loadMoreBtn.innerHTML = '<i class="fa fa-spinner fa-spin mr-2"></i> 加载中...';
+      
+      // 模拟加载延迟
+      setTimeout(() => {
+        const portfolioGrid = document.querySelector('#portfolio .grid');
+        
+        // 复制现有项目作为新内容（实际应用中会从服务器加载）
+        const items = document.querySelectorAll('.portfolio-item');
+        items.forEach(item => {
+          const clone = item.cloneNode(true);
+          portfolioGrid.appendChild(clone);
+        });
+        
+        // 重新初始化新添加的项目
+        initPortfolioFunctions();
+        
+        loading = false;
+        loadMoreBtn.innerHTML = '加载更多作品 <i class="fa fa-refresh ml-2"></i>';
+      }, 1500);
+    });
+  });
+</script>
+{% endblock %}

@@ -1,0 +1,131 @@
+{% extends "base.html" %}
+
+{% block content %}
+  <!-- 作品详情区域 -->
+  <section id="portfolio-item" class="py-20 bg-white pt-32">
+    <div class="container mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="mb-12">
+        <a href="{{ url_for('home') }}#portfolio" class="inline-flex items-center text-primary hover:text-primary/80 transition-custom">
+          <i class="fa fa-arrow-left mr-2"></i> 返回作品集
+        </a>
+      </div>
+      
+      <div class="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+        <div>
+          {% if item.type == 'image' %}
+            <div class="relative rounded-xl overflow-hidden shadow-lg">
+              <img src="{{ item.image }}" alt="{{ item.title }}" class="w-full h-auto cursor-zoom-in" id="detailImage">
+            </div>
+          {% else %}
+            <div class="aspect-w-16 aspect-h-9 rounded-xl overflow-hidden shadow-lg">
+              <iframe width="100%" height="480" src="{{ item.video_url }}" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+            </div>
+          {% endif %}
+        </div>
+        
+        <div>
+          <span class="inline-block px-4 py-1 bg-primary/10 text-primary rounded-full text-sm font-medium mb-4">
+            {{ item.category | capitalize }}
+          </span>
+          <h1 class="text-[clamp(1.5rem,3vw,2.5rem)] font-bold mb-6">{{ item.title }}</h1>
+          <p class="text-gray-600 mb-8 text-lg">
+            {{ item.description }}
+          </p>
+          
+          <div class="mb-8">
+            <h3 class="text-lg font-semibold mb-4">作品详情</h3>
+            <ul class="space-y-3">
+              <li class="flex items-start">
+                <i class="fa fa-check-circle text-primary mt-1 mr-3"></i>
+                <span>创作日期: 2023年6月15日</span>
+              </li>
+              <li class="flex items-start">
+                <i class="fa fa-check-circle text-primary mt-1 mr-3"></i>
+                <span>使用工具: Adobe Creative Suite</span>
+              </li>
+              <li class="flex items-start">
+                <i class="fa fa-check-circle text-primary mt-1 mr-3"></i>
+                <span>项目周期: 2周</span>
+              </li>
+              <li class="flex items-start">
+                <i class="fa fa-check-circle text-primary mt-1 mr-3"></i>
+                <span>客户: 个人项目</span>
+              </li>
+            </ul>
+          </div>
+          
+          <div class="flex flex-wrap gap-4">
+            <a href="#" class="px-6 py-3 bg-primary hover:bg-primary/90 text-white font-medium rounded-lg transition-custom hover-lift">
+              查看完整项目 <i class="fa fa-external-link ml-2"></i>
+            </a>
+            <a href="{{ url_for('contact') }}" class="px-6 py-3 bg-gray-100 hover:bg-gray-200 text-dark font-medium rounded-lg transition-custom hover-lift">
+              咨询合作 <i class="fa fa-handshake-o ml-2"></i>
+            </a>
+          </div>
+        </div>
+      </div>
+      
+      <!-- 相关作品 -->
+      <div class="mt-20">
+        <h2 class="text-2xl font-bold mb-8">相关作品</h2>
+        <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
+          {% for related_item in portfolio_items if related_item.id != item.id and related_item.category == item.category | slice(0, 3) %}
+            <div class="portfolio-item group" data-category="{{ related_item.category }}">
+              <div class="relative overflow-hidden rounded-xl shadow-lg bg-white">
+                <img src="{{ related_item.image }}" alt="{{ related_item.title }}" class="w-full h-48 object-cover object-center transition-custom group-hover:scale-110">
+                <div class="absolute inset-0 bg-gradient-to-t from-dark/80 to-transparent opacity-0 group-hover:opacity-100 transition-custom flex flex-col justify-end p-4">
+                  <h3 class="text-lg font-semibold text-white mb-1">{{ related_item.title }}</h3>
+                  <a href="{{ url_for('portfolio_item', item_id=related_item.id) }}" class="text-white text-sm inline-block">
+                    查看详情 <i class="fa fa-arrow-right ml-1"></i>
+                  </a>
+                </div>
+              </div>
+            </div>
+          {% endfor %}
+        </div>
+      </div>
+    </div>
+  </section>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+  // 页面加载完成后设置导航栏样式
+  document.addEventListener('DOMContentLoaded', function() {
+    const navbar = document.getElementById('navbar');
+    navbar.classList.add('bg-white', 'shadow-md');
+    navbar.classList.remove('bg-transparent');
+    document.querySelectorAll('#navbar a').forEach(link => {
+      link.classList.remove('text-white');
+      link.classList.add('text-dark', 'hover:text-primary');
+    });
+    
+    // 显示返回上一页按钮
+    const backBtn = document.getElementById('backBtn');
+    backBtn.classList.remove('opacity-0', 'invisible');
+    backBtn.classList.add('opacity-100', 'visible');
+    
+    // 为详情页图片添加放大功能
+    const detailImage = document.getElementById('detailImage');
+    if (detailImage) {
+      detailImage.addEventListener('click', function() {
+        const imageModal = document.getElementById('imageModal');
+        const modalImage = document.getElementById('modalImage');
+        const modalTitle = document.getElementById('modalTitle');
+        const modalDescription = document.getElementById('modalDescription');
+        
+        modalImage.src = this.src.replace('/600/400', '/1200/800');
+        modalTitle.textContent = "{{ item.title }}";
+        modalDescription.textContent = "{{ item.description }}";
+        
+        imageModal.classList.remove('opacity-0', 'invisible');
+        imageModal.classList.add('opacity-100', 'visible');
+        document.body.style.overflow = 'hidden';
+      });
+    }
+    
+    // 初始化相关作品的交互功能
+    initPortfolioFunctions();
+  });
+</script>
+{% endblock %}

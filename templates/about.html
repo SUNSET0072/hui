@@ -1,0 +1,66 @@
+{% extends "base.html" %}
+
+{% block content %}
+  <!-- 关于我区域 -->
+  <section id="about" class="py-20 bg-white pt-32">
+    <div class="container mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="flex flex-col lg:flex-row gap-12 items-center">
+        <div class="lg:w-1/2">
+          <div class="relative">
+            <img src="https://picsum.photos/id/64/600/800" alt="个人照片" class="w-full max-w-md mx-auto rounded-xl shadow-xl">
+            <div class="absolute -bottom-6 -right-6 bg-primary text-white p-6 rounded-lg shadow-lg hidden md:block">
+              <p class="text-3xl font-bold">5+</p>
+              <p class="text-sm">年创作经验</p>
+            </div>
+          </div>
+        </div>
+        <div class="lg:w-1/2">
+          <h2 class="text-[clamp(1.5rem,3vw,2.5rem)] font-bold mb-6">关于我的故事</h2>
+          <p class="text-gray-600 mb-6">
+            我是一名充满激情的设计师和摄影师，拥有超过5年的创意行业经验。我热爱通过视觉艺术表达想法和情感，擅长将复杂的概念转化为简洁而有力的视觉作品。
+          </p>
+          <p class="text-gray-600 mb-8">
+            我的作品曾在多个国际设计大赛中获奖，并被多家知名媒体报道。我相信好的设计不仅要美观，更要能够与观众建立情感连接，传递有意义的信息。
+          </p>
+          
+          <!-- 技能标签 -->
+          <div class="mb-8">
+            <h3 class="text-lg font-semibold mb-4">我的技能</h3>
+            <div class="flex flex-wrap gap-3">
+              <span class="px-4 py-2 bg-gray-100 text-dark rounded-full text-sm">UI/UX设计</span>
+              <span class="px-4 py-2 bg-gray-100 text-dark rounded-full text-sm">摄影</span>
+              <span class="px-4 py-2 bg-gray-100 text-dark rounded-full text-sm">视频编辑</span>
+              <span class="px-4 py-2 bg-gray-100 text-dark rounded-full text-sm">品牌设计</span>
+              <span class="px-4 py-2 bg-gray-100 text-dark rounded-full text-sm">插画</span>
+              <span class="px-4 py-2 bg-gray-100 text-dark rounded-full text-sm">3D建模</span>
+            </div>
+          </div>
+          
+          <a href="{{ url_for('contact') }}" class="inline-block px-8 py-3 bg-primary hover:bg-primary/90 text-white font-medium rounded-lg hover-lift">
+            联系我 <i class="fa fa-arrow-right ml-2"></i>
+          </a>
+        </div>
+      </div>
+    </div>
+  </section>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+  // 页面加载完成后设置导航栏样式
+  document.addEventListener('DOMContentLoaded', function() {
+    const navbar = document.getElementById('navbar');
+    navbar.classList.add('bg-white', 'shadow-md');
+    navbar.classList.remove('bg-transparent');
+    document.querySelectorAll('#navbar a').forEach(link => {
+      link.classList.remove('text-white');
+      link.classList.add('text-dark', 'hover:text-primary');
+    });
+    
+    // 显示返回上一页按钮
+    const backBtn = document.getElementById('backBtn');
+    backBtn.classList.remove('opacity-0', 'invisible');
+    backBtn.classList.add('opacity-100', 'visible');
+  });
+</script>
+{% endblock %}

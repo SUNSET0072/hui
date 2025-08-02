@@ -1,0 +1,310 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>{{ title }}</title>
+  <!-- 引入Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- 引入Font Awesome -->
+  <link href="https://cdn.jsdelivr.net/npm/font-awesome@4.7.0/css/font-awesome.min.css" rel="stylesheet">
+  <!-- 引入Inter字体 -->
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&amp;display=swap" rel="stylesheet">
+  
+  <!-- Tailwind配置 -->
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            primary: '#165DFF',
+            secondary: '#FF7D00',
+            dark: '#1E293B',
+            light: '#F8FAFC'
+          },
+          fontFamily: {
+            inter: ['Inter', 'sans-serif'],
+          },
+        },
+      }
+    }
+  </script>
+  
+  <style type="text/tailwindcss">
+    @layer utilities {
+      .content-auto {
+        content-visibility: auto;
+      }
+      .text-shadow {
+        text-shadow: 0 2px 4px rgba(0,0,0,0.1);
+      }
+      .transition-custom {
+        transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+      }
+      .hover-lift {
+        @apply hover:-translate-y-1 transition-all duration-300;
+      }
+      .filter-active {
+        @apply bg-primary text-white;
+      }
+    }
+  </style>
+</head>
+
+<body class="font-inter bg-light text-dark antialiased">
+  <!-- 返回上一页按钮 -->
+  <button id="backBtn" class="fixed top-6 left-6 z-50 bg-white/80 backdrop-blur-sm p-3 rounded-full shadow-lg hover:bg-white transition-custom opacity-0 invisible">
+    <i class="fa fa-arrow-left text-primary text-xl"></i>
+  </button>
+
+  <!-- 导航栏 -->
+  <header id="navbar" class="fixed top-0 left-0 right-0 z-40 transition-all duration-300 bg-transparent">
+    <div class="container mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="flex justify-between items-center py-4">
+        <a href="{{ url_for('home') }}" class="text-2xl font-bold text-white text-shadow">
+          <span class="text-primary">Portfolio</span>
+        </a>
+        
+        <!-- 桌面导航 -->
+        <nav class="hidden md:flex space-x-8">
+          <a href="{{ url_for('home') }}#home" class="text-white hover:text-secondary transition-custom font-medium">首页</a>
+          <a href="{{ url_for('home') }}#portfolio" class="text-white hover:text-secondary transition-custom font-medium">作品集</a>
+          <a href="{{ url_for('about') }}" class="text-white hover:text-secondary transition-custom font-medium">关于我</a>
+          <a href="{{ url_for('contact') }}" class="text-white hover:text-secondary transition-custom font-medium">联系我</a>
+        </nav>
+        
+        <!-- 移动端菜单按钮 -->
+        <button id="menuBtn" class="md:hidden text-white text-2xl">
+          <i class="fa fa-bars"></i>
+        </button>
+      </div>
+    </div>
+    
+    <!-- 移动端导航菜单 -->
+    <div id="mobileMenu" class="md:hidden bg-white shadow-lg absolute w-full left-0 top-full transform -translate-y-full opacity-0 invisible transition-custom z-50">
+      <div class="container mx-auto px-4 py-4 flex flex-col space-y-4">
+        <a href="{{ url_for('home') }}#home" class="block py-2 text-dark hover:text-primary transition-custom">首页</a>
+        <a href="{{ url_for('home') }}#portfolio" class="block py-2 text-dark hover:text-primary transition-custom">作品集</a>
+        <a href="{{ url_for('about') }}" class="block py-2 text-dark hover:text-primary transition-custom">关于我</a>
+        <a href="{{ url_for('contact') }}" class="block py-2 text-dark hover:text-primary transition-custom">联系我</a>
+      </div>
+    </div>
+  </header>
+
+  <main>
+    {% block content %}{% endblock %}
+  </main>
+
+  <!-- 页脚 -->
+  <footer class="bg-dark text-white py-12">
+    <div class="container mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="flex flex-col md:flex-row justify-between items-center">
+        <div class="mb-6 md:mb-0">
+          <a href="{{ url_for('home') }}" class="text-2xl font-bold">
+            <span class="text-primary">Portfolio</span>
+          </a>
+          <p class="text-gray-400 mt-2">创意设计与艺术作品集</p>
+        </div>
+        <div class="text-gray-400 text-sm">
+          © 2023 个人作品集网站. 保留所有权利.
+        </div>
+      </div>
+    </div>
+  </footer>
+
+  <!-- 图片放大模态框 -->
+  <div id="imageModal" class="fixed inset-0 z-50 bg-black/90 flex items-center justify-center opacity-0 invisible transition-custom">
+    <button id="closeModal" class="absolute top-6 right-6 text-white text-3xl hover:text-primary transition-custom">
+      <i class="fa fa-times"></i>
+    </button>
+    <div class="container max-w-5xl px-4">
+      <img id="modalImage" src="" alt="大图预览" class="max-h-[80vh] mx-auto">
+      <div class="mt-4 text-white text-center">
+        <h3 id="modalTitle" class="text-xl font-semibold"></h3>
+        <p id="modalDescription" class="text-gray-300 mt-2"></p>
+      </div>
+    </div>
+  </div>
+
+  <!-- 视频播放模态框 -->
+  <div id="videoModal" class="fixed inset-0 z-50 bg-black/90 flex items-center justify-center opacity-0 invisible transition-custom">
+    <button id="closeVideoModal" class="absolute top-6 right-6 text-white text-3xl hover:text-primary transition-custom">
+      <i class="fa fa-times"></i>
+    </button>
+    <div class="container max-w-5xl px-4">
+      <div class="aspect-w-16 aspect-h-9 relative">
+        <iframe id="modalVideo" width="100%" height="480" src="" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen=""></iframe>
+      </div>
+      <div class="mt-4 text-white text-center">
+        <h3 id="videoModalTitle" class="text-xl font-semibold"></h3>
+        <p id="videoModalDescription" class="text-gray-300 mt-2"></p>
+      </div>
+    </div>
+  </div>
+
+  <!-- JavaScript -->
+  <script>
+    // 导航栏滚动效果
+    const navbar = document.getElementById('navbar');
+    const backBtn = document.getElementById('backBtn');
+    
+    window.addEventListener('scroll', function() {
+      if (window.scrollY > 100) {
+        navbar.classList.add('bg-white', 'shadow-md');
+        navbar.classList.remove('bg-transparent');
+        document.querySelectorAll('#navbar a').forEach(link => {
+          link.classList.remove('text-white');
+          link.classList.add('text-dark', 'hover:text-primary');
+        });
+        
+        // 显示返回上一页按钮
+        backBtn.classList.remove('opacity-0', 'invisible');
+        backBtn.classList.add('opacity-100', 'visible');
+      } else {
+        navbar.classList.remove('bg-white', 'shadow-md');
+        navbar.classList.add('bg-transparent');
+        document.querySelectorAll('#navbar a:not(.mobile-link)').forEach(link => {
+          link.classList.add('text-white');
+          link.classList.remove('text-dark', 'hover:text-primary');
+        });
+        
+        // 隐藏返回上一页按钮
+        backBtn.classList.add('opacity-0', 'invisible');
+        backBtn.classList.remove('opacity-100', 'visible');
+      }
+    });
+    
+    // 移动端菜单
+    const menuBtn = document.getElementById('menuBtn');
+    const mobileMenu = document.getElementById('mobileMenu');
+    let menuOpen = false;
+    
+    menuBtn.addEventListener('click', function() {
+      if (menuOpen) {
+        mobileMenu.classList.add('-translate-y-full', 'opacity-0', 'invisible');
+        mobileMenu.classList.remove('translate-y-0', 'opacity-100', 'visible');
+        menuBtn.innerHTML = '<i class="fa fa-bars"></i>';
+      } else {
+        mobileMenu.classList.remove('-translate-y-full', 'opacity-0', 'invisible');
+        mobileMenu.classList.add('translate-y-0', 'opacity-100', 'visible');
+        menuBtn.innerHTML = '<i class="fa fa-times"></i>';
+      }
+      menuOpen = !menuOpen;
+    });
+    
+    // 平滑滚动
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+      anchor.addEventListener('click', function (e) {
+        e.preventDefault();
+        
+        // 关闭移动菜单（如果打开）
+        if (menuOpen) {
+          mobileMenu.classList.add('-translate-y-full', 'opacity-0', 'invisible');
+          mobileMenu.classList.remove('translate-y-0', 'opacity-100', 'visible');
+          menuBtn.innerHTML = '<i class="fa fa-bars"></i>';
+          menuOpen = false;
+        }
+        
+        document.querySelector(this.getAttribute('href')).scrollIntoView({
+          behavior: 'smooth'
+        });
+      });
+    });
+    
+    // 返回上一页按钮
+    backBtn.addEventListener('click', function() {
+      window.history.back();
+    });
+
+    // 图片放大功能
+    const imageModal = document.getElementById('imageModal');
+    const modalImage = document.getElementById('modalImage');
+    const modalTitle = document.getElementById('modalTitle');
+    const modalDescription = document.getElementById('modalDescription');
+    const closeModal = document.getElementById('closeModal');
+    
+    // 关闭图片模态框
+    closeModal.addEventListener('click', function() {
+      imageModal.classList.add('opacity-0', 'invisible');
+      imageModal.classList.remove('opacity-100', 'visible');
+      document.body.style.overflow = 'auto'; // 恢复滚动
+    });
+    
+    // 点击模态框背景关闭
+    imageModal.addEventListener('click', function(e) {
+      if (e.target === imageModal) {
+        imageModal.classList.add('opacity-0', 'invisible');
+        imageModal.classList.remove('opacity-100', 'visible');
+        document.body.style.overflow = 'auto';
+      }
+    });
+    
+    // 视频播放功能
+    const videoModal = document.getElementById('videoModal');
+    const modalVideo = document.getElementById('modalVideo');
+    const videoModalTitle = document.getElementById('videoModalTitle');
+    const videoModalDescription = document.getElementById('videoModalDescription');
+    const closeVideoModal = document.getElementById('closeVideoModal');
+    
+    // 关闭视频模态框
+    closeVideoModal.addEventListener('click', function() {
+      modalVideo.src = ''; // 停止视频播放
+      videoModal.classList.add('opacity-0', 'invisible');
+      videoModal.classList.remove('opacity-100', 'visible');
+      document.body.style.overflow = 'auto';
+    });
+    
+    // 点击视频模态框背景关闭
+    videoModal.addEventListener('click', function(e) {
+      if (e.target === videoModal) {
+        modalVideo.src = '';
+        videoModal.classList.add('opacity-0', 'invisible');
+        videoModal.classList.remove('opacity-100', 'visible');
+        document.body.style.overflow = 'auto';
+      }
+    });
+
+    // 通用初始化函数
+    function initPortfolioFunctions() {
+      // 为所有可点击图片添加事件
+      document.querySelectorAll('.portfolio-item img').forEach(img => {
+        if (!img.closest('.aspect-w-16')) { // 排除视频缩略图
+          img.addEventListener('click', function() {
+            const parent = this.closest('.portfolio-item');
+            const title = parent.querySelector('h3').textContent;
+            const description = parent.querySelector('p').textContent;
+            
+            modalImage.src = this.src.replace('/600/400', '/1200/800'); // 加载大图
+            modalTitle.textContent = title;
+            modalDescription.textContent = description;
+            
+            imageModal.classList.remove('opacity-0', 'invisible');
+            imageModal.classList.add('opacity-100', 'visible');
+            document.body.style.overflow = 'hidden'; // 防止背景滚动
+          });
+        }
+      });
+      
+      // 视频播放按钮点击事件
+      document.querySelectorAll('.portfolio-item .fa-play').forEach(playBtn => {
+        playBtn.parentElement.addEventListener('click', function() {
+          const parent = this.closest('.portfolio-item');
+          const title = parent.querySelector('h3').textContent;
+          const description = parent.querySelector('p').textContent;
+          const videoUrl = this.getAttribute('data-video-url');
+          
+          modalVideo.src = videoUrl + '?autoplay=1';
+          videoModalTitle.textContent = title;
+          videoModalDescription.textContent = description;
+          
+          videoModal.classList.remove('opacity-0', 'invisible');
+          videoModal.classList.add('opacity-100', 'visible');
+          document.body.style.overflow = 'hidden';
+        });
+      });
+    }
+  </script>
+  
+  {% block extra_js %}{% endblock %}
+</body>
+</html>
